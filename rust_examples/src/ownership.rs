@@ -12,6 +12,12 @@
 // NOTE that instead of moving ownership of a variable's value, we can instead borrow it by using a
 // _reference_ to the value. Given a variable `x`, the syntax `&x` is a _reference_ to "x" that "borrows" the value of "x".
 
+// TODO: not only variables can own values/memory
+// I think that, for example, the fact that functions can own stuff helps explain why we don't just
+// pass everything as references.
+// I guess the other reason is that we want to pass ownership when we know we won't need the
+// variable anymore, so the memory can be freed -- it's a way to keep track of how long we need to
+// keep the memory allocated
 
 
 fn diagonal<T>(x: T) -> (T, T) where T: Copy {
@@ -26,4 +32,16 @@ fn move_ownership<T, U>(f: fn(T) -> U, x: T) -> T where T: Copy {
 fn borrow<T, U>(f: fn(&T) -> U, x: T) -> T {
     f(&x);
     x
+}
+fn no_own<T>(f: fn(&T), x: &T) -> &T {
+    f(x);
+    x
+}
+
+#[test]
+fn mutate() {
+    let mut s = String::from("");
+    s.push('a');
+    String::push(&mut s, 'b');
+    println!("{}", s);
 }
