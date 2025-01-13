@@ -54,6 +54,7 @@ mod test {
         z = y;
     }
 
+    // see https://quinedot.github.io/rust-learning/st-reborrow.html
     fn mutate_forreal<T>(x: &mut T, y: T) {
         *x = y;
     }
