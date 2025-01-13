@@ -38,10 +38,45 @@ fn no_own<T>(f: fn(&T), x: &T) -> &T {
     x
 }
 
-#[test]
-fn mutate() {
-    let mut s = String::from("");
-    s.push('a');
-    String::push(&mut s, 'b');
-    println!("{}", s);
+// fn mutable<T>(f: fn(T), x: &mut T) {
+//     f(*x);
+// }
+
+#[cfg(test)]
+mod test {
+
+    fn mutate<T>(mut x: T, y: T) {
+        x = y;
+    }
+
+    fn other_mutate<T>(x: T, y: T) {
+        let mut z = x;
+        z = y;
+    }
+
+    fn mutate_forreal<T>(x: &mut T, y: T) {
+        *x = y;
+    }
+
+    #[test]
+    fn mutate_tst() {
+        {
+            let mut a = "a";
+            mutate(a,"b");
+            assert_ne!(a, "b");
+        }
+
+        {
+            let mut a = String::from("a");
+            mutate(a,String::from("b"));
+            // `a` gets changed, but also no longer exists in this scope because ownership was
+            // moved into `mutate`
+        }
+
+        {
+            let mut a = String::from("a");
+            mutate_forreal(&mut a, String::from("b"));
+            assert_eq!(a, "b");
+        }
+    }
 }
