@@ -38,9 +38,7 @@ fn no_own<T>(f: fn(&T), x: &T) -> &T {
     x
 }
 
-// fn mutable<T>(f: fn(T), x: &mut T) {
-//     f(*x);
-// }
+// TODO: Deref coercion!
 
 #[cfg(test)]
 mod test {
