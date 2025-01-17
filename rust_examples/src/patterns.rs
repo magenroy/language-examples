@@ -1,3 +1,5 @@
+// See REF: https://cheats.rs/#pattern-matching
+
 struct Simple<T>(T);
 
 fn a<T>(Simple(v) : Simple<T>) -> T { v }
@@ -12,4 +14,8 @@ fn pattern_reference<T>(x: &Simple<T>) -> &T {
 fn pass_by_reference<T>(x: &Simple<T>) -> &T {
     let Simple(ref v) = *x;
     v
+}
+
+enum MyEnum<T> {
+    A, B(T), C(Simple<T>)
 }

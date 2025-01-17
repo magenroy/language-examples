@@ -19,6 +19,9 @@ trait Trait: Sized {
 
     fn borrowing_method<T>(&self) -> T;
 
+    // `self` can be any type that dereferences to `Self`
+    fn fancy_deref<T>(self: Box<Self>) -> Self;
+
     fn mutating_method(&mut self);
 
     fn owning_method<T>(self) -> T;
@@ -41,6 +44,26 @@ trait Trait: Sized {
 
 trait SubTrait: Trait {} 
 
+trait WithGeneric<'a, T=i32, D=T> where D: ?Sized {
+
+    fn f() -> D;
+
+    fn g(x: &'a T) -> Self;
+}
+
+impl<'a, T> WithGeneric<'a, T> for &'a T where T: Default {
+
+    fn f() -> T { Default::default() }
+
+    fn g(x: &'a T) -> Self { x }
+
+}
+
+impl WithGeneric<'static> for () {
+    fn f() -> i32 { 0 }
+    fn g(x: &'static i32) {}
+}
+
 enum MyEnum<U> { Nullary, Unary(U), Binary(U,U) }
 
 impl<U> Trait for MyEnum<U> {
@@ -48,6 +71,10 @@ impl<U> Trait for MyEnum<U> {
 
     fn borrowing_method<T>(&self) -> T {
         panic!()
+    }
+
+    fn fancy_deref<T>(self: Box<Self>) -> Self {
+        *self
     }
 
     fn mutating_method(&mut self) {
