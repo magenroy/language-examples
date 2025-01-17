@@ -16,6 +16,28 @@ fn pass_by_reference<T>(x: &Simple<T>) -> &T {
     v
 }
 
+struct NotSimple<T> {
+    first: T,
+    second: [T;2],
+    third: Option<T>,
+}
+
 enum MyEnum<T> {
-    A, B(T), C(Simple<T>)
+    A, B, C(T), D(Simple<T>), E(NotSimple<T>)
+}
+
+use MyEnum::*;
+fn matching(value: MyEnum<i32>, nullary: fn(), unary: fn(i32), borrows: fn(&i32)) {
+    let y: i32;
+    match value {
+        A => nullary(),
+        // ...
+        B | C(_) => nullary(),
+        D(Simple(x)) => nullary(),
+        // ...
+        E(NotSimple { third: Some(1 | 2), first: y@ 0..7, .. }) => unary(y),
+        E(NotSimple { first: ref x@ 1..11, ..}) => borrows(x),
+        _ => nullary(),
+        // ...
+    }
 }
