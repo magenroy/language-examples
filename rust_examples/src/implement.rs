@@ -44,6 +44,8 @@ trait Trait: Sized {
 
 trait SubTrait: Trait {} 
 
+// TODO: explain how to make consideration of using generic types or associated types for traits
+// See https://doc.rust-lang.org/book/ch19-03-advanced-traits.html#specifying-placeholder-types-in-trait-definitions-with-associated-types
 trait WithGeneric<'a, T=i32, D=T> where D: ?Sized {
 
     fn f() -> D;
@@ -64,6 +66,7 @@ impl WithGeneric<'static> for () {
     fn g(x: &'static i32) {}
 }
 
+#[derive(Debug, PartialEq, Eq)]
 enum MyEnum<U> { Nullary, Unary(U), Binary(U,U) }
 
 impl<U> Trait for MyEnum<U> {
@@ -78,7 +81,8 @@ impl<U> Trait for MyEnum<U> {
     }
 
     fn mutating_method(&mut self) {
-        std::mem::replace(self, MyEnum::Nullary);
+        // std::mem::replace(self, MyEnum::Nullary);
+        *self = MyEnum::Nullary;
     }
 
     fn owning_method<T>(self) -> T {
@@ -97,6 +101,13 @@ impl<U> Trait for MyEnum<U> {
         panic!()
     }
 
+}
+
+#[test]
+fn tst() {
+    let mut a = MyEnum::Unary(1);
+    a.mutating_method();
+    assert_eq!(a, MyEnum::Nullary);
 }
 
 // impl SubTrait for MyEnum<[u32]> {}
